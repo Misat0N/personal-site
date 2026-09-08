@@ -1,0 +1,49 @@
+---
+const choices = [
+  { code: "zh", lang: "zh-CN", label: "简体中文", note: "进入中文页面" },
+  { code: "en", lang: "en", label: "English", note: "View in English" },
+  { code: "ja", lang: "ja", label: "日本語", note: "日本語で見る" },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="index, follow" />
+    <title>聂田塬 · Tianyuan Nie · Language</title>
+    <script is:inline>
+      (() => {
+        const supported = ["zh", "en", "ja"];
+        let selected = null;
+        try { selected = localStorage.getItem("preferred-locale"); } catch {}
+        if (!supported.includes(selected)) {
+          const languages = navigator.languages || [navigator.language || ""];
+          selected = languages.map((value) => value.toLowerCase()).map((value) => value.startsWith("ja") ? "ja" : value.startsWith("en") ? "en" : value.startsWith("zh") ? "zh" : null).find(Boolean) || "zh";
+        }
+        const suffix = `${location.search}${location.hash}`;
+        location.replace(`/${selected}/${suffix}`);
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f4f0e8; color: #17211e; }
+      body { min-height: 100vh; margin: 0; display: grid; place-items: center; }
+      main { width: min(760px, calc(100% - 2rem)); }
+      p { color: #64706a; }
+      h1 { font-family: Georgia, "Noto Serif CJK SC", serif; font-size: clamp(2.5rem, 8vw, 5.5rem); line-height: 1.05; margin: 0 0 3rem; }
+      nav { display: grid; border-top: 1px solid #a9afa8; }
+      a { display: grid; grid-template-columns: 1fr auto; gap: 1rem; padding: 1.25rem 0; border-bottom: 1px solid #a9afa8; color: inherit; text-decoration: none; }
+      a span:last-child { color: #64706a; font-size: .85rem; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p>Language / 语言 / 言語</p>
+      <h1>Choose how you would like to read.</h1>
+      <nav aria-label="Language selection">
+        {choices.map((choice) => <a href={`/${choice.code}/`} lang={choice.lang}><span>{choice.label}</span><span>{choice.note} →</span></a>)}
+      </nav>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+---
+import { localeMeta, localePath, locales } from "../i18n/config";
+import type { Locale } from "../content/types";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<nav class="language-switcher" aria-label="Language / 语言 / 言語">
+  {locales.map((target) => (
+    <a
+      href={localePath(target)}
+      lang={localeMeta[target].htmlLang}
+      hreflang={localeMeta[target].hreflang}
+      aria-current={target === locale ? "page" : undefined}
+      data-locale-link={target}
+    >
+      <span class="language-switcher__short">{localeMeta[target].shortLabel}</span>
+      <span class="language-switcher__long">{localeMeta[target].label}</span>
+    </a>
+  ))}
+</nav>
+
+<script is:inline>
+  document.querySelectorAll("[data-locale-link]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      const anchor = event.currentTarget;
+      if (!(anchor instanceof HTMLAnchorElement)) return;
+      const target = anchor.dataset.localeLink;
+      try {
+        if (target) localStorage.setItem("preferred-locale", target);
+      } catch {}
+      if (location.hash) anchor.href = `${anchor.href.split("#")[0]}${location.hash}`;
+    });
+  });
+</script>

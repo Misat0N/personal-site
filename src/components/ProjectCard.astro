@@ -1,0 +1,41 @@
+---
+import type { ResumeItem } from "../content/types";
+
+interface Props {
+  item: ResumeItem;
+  number: number;
+  highlightsLabel: string;
+  tagsLabel: string;
+}
+
+const { item, number, highlightsLabel, tagsLabel } = Astro.props;
+---
+
+<article class="project-card reveal">
+  <div class="project-card__topline">
+    <span>{String(number).padStart(2, "0")}</span>
+    <span>{item.kicker}</span>
+  </div>
+  <div class="project-card__identity">
+    <h3>{item.title}</h3>
+    {item.subtitle && <p>{item.subtitle}</p>}
+    <div class="project-card__period">
+      <span>{item.period}</span>
+      {item.status && <i>{item.status}</i>}
+    </div>
+  </div>
+  <div class="project-card__body">
+    <p class="project-card__summary">{item.summary}</p>
+    {item.highlights.length > 0 && (
+      <div class="project-card__highlights">
+        <span>{highlightsLabel}</span>
+        <ul>
+          {item.highlights.map((highlight) => <li>{highlight}</li>)}
+        </ul>
+      </div>
+    )}
+    <div class="tag-list" aria-label={tagsLabel}>
+      {item.tags.map((tag) => <span>{tag}</span>)}
+    </div>
+  </div>
+</article>

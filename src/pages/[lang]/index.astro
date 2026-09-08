@@ -1,0 +1,25 @@
+---
+import HomePage from "../../components/HomePage.astro";
+import { getProfile } from "../../content";
+import type { Locale } from "../../content/types";
+import { locales } from "../../i18n/config";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export function getStaticPaths() {
+  return locales.map((lang) => ({ params: { lang }, props: { locale: lang } }));
+}
+
+const { locale } = Astro.props as { locale: Locale };
+const content = getProfile(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  title={content.seo.title}
+  description={content.seo.description}
+  draft={content.draftMode}
+  themeToLight={content.ui.themeToLight}
+  themeToDark={content.ui.themeToDark}
+>
+  <HomePage locale={locale} content={content} />
+</BaseLayout>

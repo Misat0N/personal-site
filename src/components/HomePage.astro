@@ -1,0 +1,70 @@
+---
+import type { HomeContent, Locale, ResumeItem } from "../content/types";
+import LanguageSwitcher from "./LanguageSwitcher.astro";
+import ProjectCard from "./ProjectCard.astro";
+import SectionHeading from "./SectionHeading.astro";
+
+interface Props { locale: Locale; content: HomeContent }
+const { locale, content } = Astro.props;
+const year = new Date().getFullYear();
+const sections = content.ui.sections;
+
+const cardProps = (item: ResumeItem, number: number) => ({
+  item, number, highlightsLabel: content.ui.highlights, tagsLabel: content.ui.tagsLabel,
+});
+---
+
+{content.draftMode && <div class="draft-banner"><span>{content.ui.draftLabel}</span><p>{content.ui.draftText}</p></div>}
+
+<header class="site-header shell">
+  <a class="wordmark" href={`/${locale}/#top`} aria-label={`${content.name} ${content.ui.homeLabel}`}><span>{content.initials}</span><strong>{content.name}</strong></a>
+  <nav class="primary-nav" aria-label={content.ui.navLabel}>
+    <a href="#about">{content.ui.nav.about}</a><a href="#focus">{content.ui.nav.focus}</a><a href="#resume">{content.ui.nav.resume}</a><a href="#work">{content.ui.nav.work}</a><a href="#contact">{content.ui.nav.contact}</a>
+  </nav>
+  <div class="site-header__tools"><LanguageSwitcher locale={locale} /><button class="theme-toggle" type="button" data-theme-toggle><span class="theme-toggle__sun" aria-hidden="true">☼</span><span class="theme-toggle__moon" aria-hidden="true">◐</span></button></div>
+</header>
+
+<main id="top">
+  <section class="hero shell" aria-labelledby="hero-title">
+    <div class="hero__aside reveal"><p>{content.eyebrow}</p><div class="hero__status"><i aria-hidden="true"></i><span>{content.availability}</span></div></div>
+    <div class="hero__main">
+      <p class="hero__name reveal">{content.ui.greeting} {content.name} <small>{content.romanizedName}</small></p>
+      <h1 id="hero-title" class="reveal">{content.headlineLines.map((line, index) => <span class:list={{ accent: index === content.headlineLines.length - 1 }}>{line}</span>)}</h1>
+      <div class="hero__footer reveal"><p>{content.introduction}</p><div class="hero__actions"><a class="button button--solid" href="#work">{content.ui.viewWork}</a><a class="button button--ghost" href="#contact">{content.ui.contactCta}</a></div></div>
+    </div>
+    <div class="hero__mark" aria-hidden="true"><span>N</span><span>田</span></div>
+  </section>
+
+  {content.portrait && <aside class="portrait-rail shell reveal" aria-label="Portrait">
+    <div class:list={["portrait-frame", { "portrait-frame--filled": content.portrait }]}>
+      {content.portrait ? (
+        <img src={content.portrait.src} alt={content.portrait.alt} style={`object-position: ${content.portrait.objectPosition ?? "50% 50%"}`} loading="lazy" decoding="async" />
+      ) : (
+        <>
+          <div class="portrait-frame__guide" aria-hidden="true"><span>{content.initials}</span><i></i></div>
+          <div class="portrait-frame__copy"><strong>Portrait / 写真</strong><p>{locale === "zh" ? "预留个人照片位 · 建议 4:5 竖图" : locale === "ja" ? "ポートレート用スペース · 縦4:5推奨" : "Reserved portrait space · 4:5 vertical recommended"}</p></div>
+        </>
+      )}
+    </div>
+  </aside>}
+
+  <section class="section shell" id="about"><SectionHeading {...sections.about} /><div class="about-grid"><p class="about-grid__lead reveal">{content.about}</p><div class="about-grid__facts reveal">{content.facts.map((fact) => <div><span>{fact.label}</span><strong>{fact.value}</strong></div>)}</div></div></section>
+
+  <section class="section section--tint" id="focus"><div class="shell"><SectionHeading {...sections.focus} /><div class="focus-grid">{content.focusAreas.map((area) => <article class="focus-card reveal"><span class="focus-card__index">{area.index}</span><h3>{area.title}</h3><p>{area.description}</p><div class="tag-list">{area.tags.map((tag) => <span>{tag}</span>)}</div></article>)}</div></div></section>
+
+  <section class="section shell resume-section" id="resume"><SectionHeading {...sections.education} /><div class="project-grid project-grid--compact">{content.education.map((item, i) => <ProjectCard {...cardProps(item, i + 1)} />)}</div><div class="resume-section__divider"></div><SectionHeading {...sections.experience} /><div class="project-grid project-grid--compact">{content.experience.map((item, i) => <ProjectCard {...cardProps(item, i + 1)} />)}</div></section>
+
+  <section class="section section--tint" id="work"><div class="shell"><SectionHeading {...sections.work} /><div class="project-grid">{content.projects.map((item, i) => <ProjectCard {...cardProps(item, i + 1)} />)}</div></div></section>
+
+  <section class="section shell" id="awards"><SectionHeading {...sections.awards} /><div class="award-list reveal">{content.awards.map((award) => <article><time>{award.year}</time><div><h3>{award.title}</h3><strong>{award.award}</strong><p>{award.description}</p></div></article>)}</div></section>
+
+  <section class="section section--tint" id="skills"><div class="shell"><SectionHeading {...sections.skills} /><div class="skills-grid">{content.skills.map((group) => <article class="skill-group reveal"><h3>{group.title}</h3><div class="tag-list">{group.items.map((item) => <span>{item}</span>)}</div></article>)}</div></div></section>
+
+  <section class="section shell" id="exchange"><SectionHeading {...sections.exchange} /><div class="project-grid project-grid--compact"><ProjectCard {...cardProps(content.exchange, 1)} /></div></section>
+
+  <section class="contact section" id="contact"><div class="shell contact__inner"><div class="contact__number reveal">{sections.contact.index}</div><div class="contact__copy reveal"><p>{sections.contact.eyebrow}</p><h2>{content.contact.heading}</h2><span>{content.contact.body}</span>{content.contact.links.length > 0 && <div class="contact__links">{content.contact.links.map((link) => <a class="button button--light" href={link.href}>{link.label}</a>)}</div>}{content.contact.note && <small>{content.contact.note}</small>}</div></div></section>
+
+  {content.draftMode && <section class="section shell" id="materials"><SectionHeading {...sections.materials} /><ol class="materials-list reveal">{content.missingContent.map((item, index) => <li><span>{String(index + 1).padStart(2, "0")}</span><p>{item}</p></li>)}</ol></section>}
+</main>
+
+<footer class="site-footer shell"><p>© {year} {content.name}</p><a href="#top">{content.ui.backToTop} ↑</a></footer>

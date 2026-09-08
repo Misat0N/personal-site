@@ -1,0 +1,72 @@
+---
+import "../styles/global.css";
+import type { Locale } from "../content/types";
+import { localeMeta, localePath, locales } from "../i18n/config";
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  draft?: boolean;
+  themeToLight: string;
+  themeToDark: string;
+}
+
+const { locale, title, description, draft = true, themeToLight, themeToDark } = Astro.props;
+const meta = localeMeta[locale];
+const siteUrl = import.meta.env.SITE_URL?.replace(/\/$/, "");
+const canonical = siteUrl ? `${siteUrl}${localePath(locale)}` : undefined;
+---
+
+<!doctype html>
+<html lang={meta.htmlLang} dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f4f0e8" />
+    {draft && <meta name="robots" content="noindex, nofollow, noarchive" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content={meta.ogLocale} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    {canonical && <link rel="canonical" href={canonical} />}
+    {siteUrl && locales.map((target) => (
+      <link rel="alternate" hreflang={localeMeta[target].hreflang} href={`${siteUrl}${localePath(target)}`} />
+    ))}
+    {siteUrl && <link rel="alternate" hreflang="x-default" href={`${siteUrl}/`} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <title>{title}</title>
+    <script is:inline>
+      (() => {
+        let stored = null;
+        try { stored = localStorage.getItem("theme"); } catch {}
+        const dark = stored === "dark" || (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="page-grain" aria-hidden="true"></div>
+    <slot />
+    <script is:inline define:vars={{ themeToLight, themeToDark }}>
+      const button = document.querySelector("[data-theme-toggle]");
+      const syncThemeLabel = () => {
+        if (!button) return;
+        const dark = document.documentElement.dataset.theme === "dark";
+        const label = dark ? themeToLight : themeToDark;
+        button.setAttribute("aria-label", label);
+        button.setAttribute("title", label);
+      };
+      syncThemeLabel();
+      button?.addEventListener("click", () => {
+        const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
+        try { localStorage.setItem("theme", next); } catch {}
+        syncThemeLabel();
+      });
+    </script>
+  </body>
+</html>
