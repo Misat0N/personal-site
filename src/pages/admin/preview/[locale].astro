@@ -1,0 +1,35 @@
+---
+import HomePage from "../../../components/HomePage.astro";
+import { requireAdmin } from "../../../lib/cms/auth";
+import { staticFallback } from "../../../lib/cms/fallback";
+import { getDraft, getVersion } from "../../../lib/cms/repository";
+import { getCmsDb } from "../../../lib/cms/runtime";
+import { localeSchema } from "../../../lib/cms/schema";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+export const prerender = false;
+
+await requireAdmin(Astro);
+const locale = localeSchema.parse(Astro.params.locale);
+const db = getCmsDb();
+const versionId = Astro.url.searchParams.get("v");
+const version = db ? (versionId ? await getVersion(db, versionId) : await getDraft(db, locale)) : null;
+const content = version?.locale === locale ? version.content : staticFallback(locale);
+Astro.response.headers.set("Cache-Control", "no-store");
+Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+---
+
+<BaseLayout locale={locale} title={`Preview · ${content.seo.title}`} description={content.seo.description} draft={true} themeToLight={content.ui.themeToLight} themeToDark={content.ui.themeToDark}>
+  <div class="preview-toolbar">
+    <strong>CMS Preview</strong>
+    <span>{version ? `${locale.toUpperCase()} · revision ${version.revision}` : "Static fallback"}</span>
+    <a href={`/admin/?locale=${locale}`}>Back to editor</a>
+  </div>
+  <HomePage locale={locale} content={content} />
+</BaseLayout>
+
+<style>
+  .preview-toolbar { position: sticky; top: 0; z-index: 100; display: flex; gap: 1rem; align-items: center; padding: .75rem 1rem; background: #111; color: #fff; font: 12px/1.4 ui-monospace, monospace; }
+  .preview-toolbar span { opacity: .65; }
+  .preview-toolbar a { margin-left: auto; color: #fff; }
+</style>

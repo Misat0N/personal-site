@@ -16,6 +16,20 @@ const { item, number, highlightsLabel, tagsLabel } = Astro.props;
     <span>{String(number).padStart(2, "0")}</span>
     <span>{item.kicker}</span>
   </div>
+  {item.media && (
+    <figure class="project-card__media">
+      <a href={item.media.source.href} target="_blank" rel="noopener noreferrer" aria-label={`${item.media.source.label} · ${item.title}`}>
+        <img src={item.media.src} alt={item.media.alt} loading="lazy" decoding="async" />
+      </a>
+      <figcaption>
+        <span>{item.media.caption}</span>
+        <span class="project-card__media-links">
+          <a href={item.media.source.href} target="_blank" rel="noopener noreferrer">{item.media.source.label} ↗</a>
+          {item.media.license && <a href={item.media.license.href} target="_blank" rel="noopener noreferrer">{item.media.license.label} · unchanged ↗</a>}
+        </span>
+      </figcaption>
+    </figure>
+  )}
   <div class="project-card__identity">
     <h3>{item.title}</h3>
     {item.subtitle && <p>{item.subtitle}</p>}
@@ -37,5 +51,10 @@ const { item, number, highlightsLabel, tagsLabel } = Astro.props;
     <div class="tag-list" aria-label={tagsLabel}>
       {item.tags.map((tag) => <span>{tag}</span>)}
     </div>
+    {item.links && item.links.length > 0 && (
+      <nav class="project-card__links" aria-label={`${item.title} links`}>
+        {item.links.map((link) => <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}<span aria-hidden="true">↗</span></a>)}
+      </nav>
+    )}
   </div>
 </article>

@@ -2,15 +2,24 @@
 import HomePage from "../../components/HomePage.astro";
 import { getProfile } from "../../content";
 import type { Locale } from "../../content/types";
-import { locales } from "../../i18n/config";
+import { isLocale } from "../../i18n/config";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getPublished } from "../../lib/cms/repository";
+import { getCmsDb } from "../../lib/cms/runtime";
 
-export function getStaticPaths() {
-  return locales.map((lang) => ({ params: { lang }, props: { locale: lang } }));
+export const prerender = false;
+
+if (!isLocale(Astro.params.lang)) return Astro.redirect("/", 302);
+const locale = Astro.params.lang as Locale;
+let content = getProfile(locale);
+try {
+  const db = getCmsDb();
+  const published = db ? await getPublished(db, locale) : null;
+  if (published) content = published.content;
+} catch (error) {
+  console.error(`CMS fallback for ${locale}`, error);
 }
-
-const { locale } = Astro.props as { locale: Locale };
-const content = getProfile(locale);
+Astro.response.headers.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
 ---
 
 <BaseLayout

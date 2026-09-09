@@ -1,0 +1,137 @@
+---
+import { requireAdmin } from "../../lib/cms/auth";
+
+export const prerender = false;
+const identity = await requireAdmin(Astro);
+Astro.response.headers.set("Cache-Control", "no-store");
+Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <title>Personal Site CMS</title>
+    <link rel="stylesheet" href="/admin/admin.css" />
+  </head>
+  <body>
+    <header class="admin-header">
+      <div>
+        <span>Personal Site</span>
+        <h1>Content Studio</h1>
+      </div>
+      <div class="admin-header__meta">
+        <span>{identity.email}</span>
+        <a href="/zh/" target="_blank" rel="noopener" aria-label="在新窗口打开网站">打开网站 ↗</a>
+      </div>
+    </header>
+
+    <main class="admin-shell">
+      <aside class="admin-sidebar">
+        <p class="sidebar-label">编辑语言</p>
+        <nav class="locale-nav" aria-label="编辑语言">
+          <button type="button" data-locale="zh" class="active" aria-pressed="true">简体中文</button>
+          <button type="button" data-locale="en" aria-pressed="false">English</button>
+          <button type="button" data-locale="ja" aria-pressed="false">日本語</button>
+        </nav>
+
+        <nav class="section-nav" aria-label="表单栏目">
+          <a href="#section-site">站点与首页</a>
+          <a href="#section-focus">关注方向</a>
+          <a href="#section-education">教育</a>
+          <a href="#section-experience">经历</a>
+          <a href="#section-projects">研究与项目</a>
+          <a href="#section-awards">获奖</a>
+          <a href="#section-skills">技能与语言</a>
+          <a href="#section-contact">联系方式</a>
+          <a href="#section-interface">界面文案</a>
+        </nav>
+
+        <section class="admin-status" aria-label="内容状态">
+          <span>状态</span><strong id="status">正在载入…</strong>
+          <span>未保存</span><strong id="dirty-indicator">否</strong>
+          <span>草稿修订</span><strong id="revision">—</strong>
+          <span>发布代次</span><strong id="generation">—</strong>
+        </section>
+      </aside>
+
+      <section class="editor-panel" aria-labelledby="editor-title">
+        <div class="editor-toolbar">
+          <div>
+            <span>当前语言</span>
+            <strong id="locale-label">简体中文</strong>
+            <h2 id="editor-title" class="sr-only">主页内容编辑器</h2>
+          </div>
+          <div class="editor-toolbar__actions">
+            <a id="preview-link" class="secondary-button" href="/admin/preview/zh/" target="_blank" rel="noopener" aria-label="在新窗口预览当前语言草稿">预览草稿</a>
+            <button type="button" id="reload-button" class="secondary-button">重新载入</button>
+            <button type="button" id="save-button" class="primary-button">保存草稿</button>
+          </div>
+        </div>
+
+        <div class="editor-note">
+          <strong>结构化内容编辑器</strong>
+          <p>直接填写字段即可。列表支持新增、删除和排序；保存时会按完整 HomeContent 结构提交并由服务端校验。</p>
+        </div>
+
+        <div class="editor-mode-switch" role="group" aria-label="编辑模式">
+          <button type="button" id="form-mode-button" class="active" aria-pressed="true">结构化表单</button>
+          <button type="button" id="json-mode-button" aria-pressed="false">高级 JSON</button>
+        </div>
+
+        <form id="content-form" novalidate>
+          <div id="structured-editor" aria-busy="true">
+            <p class="editor-placeholder">正在读取内容…</p>
+          </div>
+          <section id="json-panel" class="json-panel" hidden aria-labelledby="json-title">
+            <div class="json-warning">
+              <strong id="json-title">高级模式</strong>
+              <p>适合批量迁移或修复。返回表单前会读取这里的 JSON；格式错误时不会覆盖当前表单数据。</p>
+            </div>
+            <label class="sr-only" for="content-editor">完整 HomeContent JSON</label>
+            <textarea id="content-editor" spellcheck="false" autocomplete="off" aria-describedby="json-title"></textarea>
+          </section>
+        </form>
+
+        <pre id="message" role="status" aria-live="polite"></pre>
+      </section>
+
+      <section class="versions-panel" aria-labelledby="versions-title">
+        <header>
+          <div>
+            <span>Draft versions</span>
+            <h2 id="versions-title">当前语言的草稿版本</h2>
+            <p>每次保存都会创建不可变修订；可单独打开任一修订预览。</p>
+          </div>
+          <button type="button" id="refresh-versions" class="secondary-button">刷新</button>
+        </header>
+        <div id="version-list" class="version-list" aria-live="polite"></div>
+      </section>
+
+      <section class="release-panel" aria-labelledby="publish-title">
+        <div>
+          <span>Publish</span>
+          <h2 id="publish-title">将三种语言草稿作为一个版本发布</h2>
+          <p>发布会原子切换中、英、日三份内容。三个语言都至少保存一次草稿后才能发布。</p>
+        </div>
+        <label for="release-note">发布说明<input id="release-note" maxlength="500" placeholder="例如：更新项目和联系方式" /></label>
+        <button type="button" id="publish-button" class="primary-button">发布三语内容</button>
+      </section>
+
+      <section class="history-panel" aria-labelledby="history-title">
+        <header>
+          <div>
+            <span>Release history</span>
+            <h2 id="history-title">发布历史与回滚</h2>
+            <p>回滚会创建一个新的发布版本，不会删除历史。</p>
+          </div>
+          <button type="button" id="refresh-history" class="secondary-button">刷新</button>
+        </header>
+        <div id="release-list" class="release-list" aria-live="polite"></div>
+      </section>
+    </main>
+    <script is:inline type="module" src="/admin/admin.js"></script>
+  </body>
+</html>

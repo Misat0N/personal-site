@@ -659,6 +659,8 @@ a {
 }
 
 .project-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 680px;
   display: grid;
   grid-template-columns: minmax(220px, 0.85fr) 1.6fr;
   gap: 1rem 3rem;
@@ -696,6 +698,85 @@ a {
 
 .project-card__body {
   min-width: 0;
+}
+
+.project-card__media {
+  grid-column: 1 / -1;
+  margin: 0.5rem 0 1rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-deep) 72%, var(--card));
+}
+
+.project-card__media > a {
+  display: block;
+  overflow: hidden;
+  background: #fff;
+}
+
+.project-card__media img {
+  display: block;
+  width: 100%;
+  max-height: 430px;
+  object-fit: contain;
+  transition: transform 260ms ease, filter 260ms ease;
+}
+
+[data-theme="dark"] .project-card__media img {
+  filter: brightness(0.9) contrast(0.96);
+}
+
+.project-card__media > a:hover img {
+  transform: scale(1.012);
+  filter: contrast(1.025);
+}
+
+.project-card__media figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding: 0.8rem 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.project-card__media-links {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.project-card__media-links a,
+.project-card__links a {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  text-underline-offset: 0.25em;
+}
+
+.project-card__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.4rem;
+}
+
+.project-card__links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.48rem 0.72rem;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.67rem;
+  text-decoration: none;
 }
 
 .project-card__highlights {
@@ -1050,6 +1131,8 @@ a {
   .site-header__tools { gap: 0.4rem; }
   .language-switcher a { min-width: 30px; padding-inline: 0.4rem; }
   .project-card__highlights { grid-template-columns: 1fr; gap: 0.4rem; }
+  .project-card__media figcaption { flex-direction: column; }
+  .project-card__media img { max-height: 320px; }
 
   .materials-list li {
     grid-template-columns: 2.5rem 1fr;

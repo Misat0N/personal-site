@@ -4,19 +4,28 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "astro dev --host 0.0.0.0",
+    "dev": "astro dev --host 127.0.0.1",
+    "dev:worker": "npm run build && wrangler dev --local --ip 127.0.0.1 --port 8788 --persist-to .wrangler/state",
+    "db:migrate:local": "wrangler d1 migrations apply personal-site-cms --local --persist-to .wrangler/state",
+    "db:migrate:remote": "wrangler d1 migrations apply personal-site-cms --remote",
     "start": "astro dev",
     "build": "astro build",
-    "preview": "astro preview --host 0.0.0.0",
-    "check": "astro check"
+    "preview": "astro preview --host 127.0.0.1",
+    "check": "astro check",
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^14.3.1",
     "@astrojs/sitemap": "^3.7.4",
-    "astro": "^7.3.1"
+    "astro": "^7.3.1",
+    "jose": "^6.2.12",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "typescript": "^6.0.2"
+    "@cloudflare/workers-types": "^5.20260908.1",
+    "typescript": "^6.0.2",
+    "wrangler": "^4.130.0"
   },
   "engines": {
     "node": ">=22.12.0"

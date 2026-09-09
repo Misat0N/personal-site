@@ -5,6 +5,14 @@ export type Link = {
   href: string;
 };
 
+export type ResumeMedia = {
+  src: string;
+  alt: string;
+  caption: string;
+  source: Link;
+  license?: Link;
+};
+
 export type FocusArea = {
   index: string;
   title: string;
@@ -22,6 +30,8 @@ export type ResumeItem = {
   summary: string;
   highlights: string[];
   tags: string[];
+  media?: ResumeMedia;
+  links?: Link[];
 };
 
 export type Award = {
