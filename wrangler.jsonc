@@ -12,7 +12,7 @@
     {
       "binding": "CMS_DB",
       "database_name": "personal-site-cms",
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "database_id": "944c4b55-9123-4ed9-9902-a0f978812a52",
       "migrations_dir": "migrations"
     }
   ],
