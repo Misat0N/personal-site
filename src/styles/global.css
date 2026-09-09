@@ -700,9 +700,26 @@ a {
   min-width: 0;
 }
 
+.project-card--media {
+  grid-template-columns: minmax(250px, 0.72fr) minmax(0, 1.5fr);
+  grid-template-rows: auto auto 1fr;
+  align-items: start;
+}
+
+.project-card--media .project-card__identity {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.project-card--media .project-card__body {
+  grid-column: 2;
+  grid-row: 3;
+}
+
 .project-card__media {
-  grid-column: 1 / -1;
-  margin: 0.5rem 0 1rem;
+  grid-column: 1;
+  grid-row: 2 / span 2;
+  margin: 0;
   overflow: hidden;
   border: 1px solid var(--line);
   background:
@@ -713,15 +730,15 @@ a {
   display: grid;
   place-items: center;
   overflow: hidden;
-  padding: clamp(1rem, 3vw, 2.4rem);
+  padding: clamp(0.7rem, 1.6vw, 1.25rem);
 }
 
 .project-card__media img {
   display: block;
   width: auto;
-  max-width: min(100%, 680px);
+  max-width: min(100%, 360px);
   height: auto;
-  max-height: 760px;
+  max-height: 500px;
   object-fit: contain;
   border: 1px solid rgba(23, 33, 30, 0.1);
   box-shadow: 0 22px 54px rgba(23, 33, 30, 0.14);
@@ -738,9 +755,8 @@ a {
 }
 
 .project-card__media figcaption {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem 2rem;
+  display: grid;
+  gap: 0.65rem;
   padding: 0.8rem 1rem;
   border-top: 1px solid var(--line);
   color: var(--muted);
@@ -1082,6 +1098,25 @@ a {
     grid-template-columns: 1fr;
   }
 
+  .project-card--media {
+    grid-template-columns: minmax(210px, 0.72fr) minmax(0, 1.28fr);
+  }
+
+  .project-card--media .project-card__media {
+    grid-column: 1;
+    grid-row: 2 / span 2;
+  }
+
+  .project-card--media .project-card__identity {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .project-card--media .project-card__body {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
   .award-list article { grid-template-columns: 1fr; gap: 0.6rem; }
 
   .contact__number {
@@ -1137,6 +1172,10 @@ a {
   .site-header__tools { gap: 0.4rem; }
   .language-switcher a { min-width: 30px; padding-inline: 0.4rem; }
   .project-card__highlights { grid-template-columns: 1fr; gap: 0.4rem; }
+  .project-card--media { grid-template-columns: 1fr; }
+  .project-card--media .project-card__media,
+  .project-card--media .project-card__identity,
+  .project-card--media .project-card__body { grid-column: 1; grid-row: auto; }
   .project-card__media figcaption { flex-direction: column; }
   .project-card__media > a { padding: 0.75rem; }
   .project-card__media img { max-height: 620px; }

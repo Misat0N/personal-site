@@ -11,7 +11,7 @@ interface Props {
 const { item, number, highlightsLabel, tagsLabel } = Astro.props;
 ---
 
-<article class="project-card reveal">
+<article class:list={["project-card", "reveal", { "project-card--media": item.media }]}>
   <div class="project-card__topline">
     <span>{String(number).padStart(2, "0")}</span>
     <span>{item.kicker}</span>
